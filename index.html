@@ -123,13 +123,20 @@
          ***************************************************/
 
 
-        function getLastName(fullName) {
-            return fullName.match(/\w+/g)[1];
-        }
+        // function getLastName(fullName) {
+        //     return fullName.match(/\w+/g)[1];
+        // }
+        //
+        // const getFirstName = (fullName) => {
+        //     return fullName.match(/\w+/g)[0];
+        // };
 
-        const getFirstName = (fullName) => {
-            return fullName.match(/\w+/g)[0];
-        };
+        function getName(args={name, key}) {
+          let fullName = args.name
+          let key = args.key
+          let index = { "first": 0, "last": 1 }
+          return fullName.match(/\w+/g)[index[key]]
+        }
 
         /**
          * Fisher-Yates shuffle
@@ -222,8 +229,8 @@
 
         const ListRow = (props) => React.DOM.tr({ key: props.person.name }, [
             React.DOM.td({ key: 'thumb' }, React.createElement(Thumbnail, { src: props.person.url })),
-            React.DOM.td({ key: 'first' }, null, getFirstName(props.person.name)),
-            React.DOM.td({ key: 'last' }, null, getLastName(props.person.name)),
+            React.DOM.td({ key: 'first' }, null, getName({name: props.person.name, key: 'first'})),
+            React.DOM.td({ key: 'last' }, null, getName({name: props.person.name, key: 'last'})),
         ]);
 
         const ListContainer = (props) => React.DOM.table({ className: 'list-container' }, [
