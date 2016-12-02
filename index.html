@@ -185,17 +185,21 @@
          *    > [{ name: 'Jon' }, { name: 'Kevin' }, { name: 'Sam' }]
          *
          */
-        function sortObjListByProp(prop) {
+        function sortObjListByProp(prop, type) {
             return function(objList) {
                 // Make a copy & don't mutate the passed in list
                 let result = objList.slice(0);
 
+                if (type) {
+                  console.log("this should not happen for for the first name")
+                }
+
                 result.sort((a, b) => {
-                    if (a[prop] > b[prop]) {
+                    if (getName({name: a[prop], key: type}) > getName({name: b[prop], key: type})) {
                         return -1;
                     }
 
-                    if (a[prop] < b[prop]) {
+                    if (getName({name: a[prop], key: type}) < getName({name: b[prop], key: type})) {
                         return 1;
                     }
 
@@ -206,10 +210,6 @@
                 let last = (result[-1] === objList[-1])
                 let randomIndex = Math.random() * (0 - result.length) + 1
                 let random = (result[randomIndex] === objList[randomIndex])
-                console.log(objList)
-                console.log(first, result[0], objList[0])
-                console.log(last, result[-1], objList[-1])
-                console.log(random, result[randomIndex], objList[randomIndex])
                 if (first && last && random) {
                   return result.reverse()
                 }
@@ -217,10 +217,10 @@
             };
         }
 
-        const sortByFirstName = sortObjListByProp('name');
+        const sortByFirstName = sortObjListByProp('name', 'first');
 
-        const sortByLastName = (personList) => sortByFirstName(personList).reverse();
-
+        // const sortByLastName = (personList) => sortByFirstName(personList).reverse();
+        const sortByLastName = sortObjListByProp('name', 'last');
 
         /*==================================================
 
@@ -284,7 +284,7 @@
 
             _sortByLast() {
                 this.setState({
-                    visiblePersonList: sortByLastName(this.state.personList)
+                    visiblePersonList: sortByLastName(this.state.visiblePersonList)
                 });
             },
 
