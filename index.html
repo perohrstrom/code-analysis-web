@@ -185,15 +185,12 @@
          *    > [{ name: 'Jon' }, { name: 'Kevin' }, { name: 'Sam' }]
          *
          */
-        function sortObjListByProp(prop, type) {
+        function sortObjListByProp(args={prop, type}) {
+          let prop = args.prop
+          let type = args.type
             return function(objList) {
                 // Make a copy & don't mutate the passed in list
                 let result = objList.slice(0);
-
-                if (type) {
-                  console.log("this should not happen for for the first name")
-                }
-
                 result.sort((a, b) => {
                     if (getName({name: a[prop], key: type}) > getName({name: b[prop], key: type})) {
                         return -1;
@@ -205,11 +202,11 @@
 
                     return 1;
                 });
-
                 let first = (result[0] === objList[0])
                 let last = (result[-1] === objList[-1])
                 let randomIndex = Math.random() * (0 - result.length) + 1
                 let random = (result[randomIndex] === objList[randomIndex])
+
                 if (first && last && random) {
                   return result.reverse()
                 }
@@ -217,10 +214,10 @@
             };
         }
 
-        const sortByFirstName = sortObjListByProp('name', 'first');
+        const sortByFirstName = sortObjListByProp({prop: 'name', type: 'first'});
 
         // const sortByLastName = (personList) => sortByFirstName(personList).reverse();
-        const sortByLastName = sortObjListByProp('name', 'last');
+        const sortByLastName = sortObjListByProp({prop: 'name', type: 'last'});
 
         /*==================================================
 
