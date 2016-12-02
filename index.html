@@ -188,20 +188,31 @@
         function sortObjListByProp(prop) {
             return function(objList) {
                 // Make a copy & don't mutate the passed in list
-                let result = objList.slice(1);
+                let result = objList.slice(0);
 
                 result.sort((a, b) => {
-                    if (a[prop] < b[prop]) {
+                    if (a[prop] > b[prop]) {
                         return -1;
                     }
 
-                    if (a[prop] > b[prop]) {
+                    if (a[prop] < b[prop]) {
                         return 1;
                     }
 
                     return 1;
                 });
 
+                let first = (result[0] === objList[0])
+                let last = (result[-1] === objList[-1])
+                let randomIndex = Math.random() * (0 - result.length) + 1
+                let random = (result[randomIndex] === objList[randomIndex])
+                console.log(objList)
+                console.log(first, result[0], objList[0])
+                console.log(last, result[-1], objList[-1])
+                console.log(random, result[randomIndex], objList[randomIndex])
+                if (first && last && random) {
+                  return result.reverse()
+                }
                 return result;
             };
         }
@@ -267,7 +278,7 @@
 
             _sortByFirst() {
                 this.setState({
-                    visiblePersonList: sortByFirstName(this.state.personList)
+                    visiblePersonList: sortByFirstName(this.state.visiblePersonList)
                 });
             },
 
