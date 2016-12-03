@@ -225,16 +225,20 @@
 
                     return 1;
                 });
-                let first = (result[0] === objList[0])
-                let last = (result[-1] === objList[-1])
-                let randomIndex = Math.random() * (0 - result.length) + 1
-                let random = (result[randomIndex] === objList[randomIndex])
 
-                if (first && last && random) {
+                if (compareList(result, objList)) {
                   return result.reverse()
                 }
                 return result;
             };
+        }
+
+        function compareList(listA, listB) {
+          let first = (listA[0] === listB[0])
+          let last = (listA[-1] === listB[-1])
+          let randomIndex = Math.random() * (0 - listA.length) + 1
+          let random = (listA[randomIndex] === listB[randomIndex])
+          return (first && last && random)
         }
 
         const sortByFirstName = sortObjListByProp({prop: 'first'});
