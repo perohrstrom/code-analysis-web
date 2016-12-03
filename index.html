@@ -102,19 +102,43 @@
          *    ]
          */
         function getPersonList() {
-            return new Promise((resolve, reject) => {
-                fetch('http://api.namegame.willowtreemobile.com/').then(function(response) {
-                    if (response.status !== 200) {
-                        reject(new Error("Error!"));
-                    }
-
-                    response.json().then((imageList) => {
-                        resolve(imageList);
-                    });
+          return fetch('http://api.namegame.willowtreemobile.com/')
+            .then(response => {
+              if (response.ok){
+                return response.json()
+              }
+            })
+            .then(json => {
+              return json.map(function(employee) {
+                return new Person ({
+                  fullName: employee.name,
+                  first: getName({name: employee.name, key: "first"}),
+                  last: getName({name: employee.name, key: "last"}),
+                  url: employee.url
                 });
-            });
+              })
+            })
         }
 
+        function Person(args={fullName, first, last, url}){
+          this.fullName = args.fullName
+          this.first = args.first;
+          this.last = args.last;
+          this.url = args.url
+        }
+
+
+        function employeeParser(json){
+          this.firstName = getName(json)
+          json.map(function(object) {
+            return {
+              firstName: getName(object, "first"),
+              lastName: getName(object, "last"),
+              url: object.url
+            }
+          })
+
+        }
 
         /*==================================================
 
@@ -230,15 +254,16 @@
             onChange: props.onChange
         });
 
+
         const Thumbnail = (props) => React.DOM.img({
             className: 'image',
             src: props.src
         });
 
-        const ListRow = (props) => React.DOM.tr({ key: props.person.name }, [
+        const ListRow = (props) => React.DOM.tr({ key: props.fullName }, [
             React.DOM.td({ key: 'thumb' }, React.createElement(Thumbnail, { src: props.person.url })),
-            React.DOM.td({ key: 'first' }, null, getName({name: props.person.name, key: 'first'})),
-            React.DOM.td({ key: 'last' }, null, getName({name: props.person.name, key: 'last'})),
+            React.DOM.td({ key: 'first' }, null, props.person.first),
+            React.DOM.td({ key: 'last' }, null, props.person.last),
         ]);
 
         const ListContainer = (props) => React.DOM.table({ className: 'list-container' }, [
@@ -253,10 +278,12 @@
 
         const App = React.createClass({
             getInitialState() {
+              debugger
                 return {
                     personList: [],
                     visiblePersonList: []
                 };
+                debugger
             },
 
             componentDidMount() {
@@ -293,6 +320,7 @@
 
             render() {
                 const { visiblePersonList } = this.state;
+                console.log("this is my state", this.state)
 
                 return React.DOM.div({ className: 'app-container' }, [
                     React.createElement(Search, { key: 'search', onChange: this._onSearch }),
