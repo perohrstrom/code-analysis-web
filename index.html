@@ -210,19 +210,18 @@
          *
          */
 
-         
-        function sortObjListByProp(args={prop, type}) {
+
+        function sortObjListByProp(args={prop}) {
           let prop = args.prop
-          let type = args.type
             return function(objList) {
                 // Make a copy & don't mutate the passed in list
                 let result = objList.slice(0);
                 result.sort((a, b) => {
-                    if (getName({name: a[prop], key: type}) > getName({name: b[prop], key: type})) {
+                    if (a[prop] > b[prop]) {
                         return -1;
                     }
 
-                    if (getName({name: a[prop], key: type}) < getName({name: b[prop], key: type})) {
+                    if (a[prop] < b[prop]) {
                         return 1;
                     }
 
@@ -240,10 +239,10 @@
             };
         }
 
-        const sortByFirstName = sortObjListByProp({prop: 'name', type: 'first'});
+        const sortByFirstName = sortObjListByProp({prop: 'first'});
 
         // const sortByLastName = (personList) => sortByFirstName(personList).reverse();
-        const sortByLastName = sortObjListByProp({prop: 'name', type: 'last'});
+        const sortByLastName = sortObjListByProp({prop: 'last'});
 
         /*==================================================
 
