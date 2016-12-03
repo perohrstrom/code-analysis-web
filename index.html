@@ -188,7 +188,7 @@
          */
         function filterByName(searchForName, personList) {
             return personList.filter((person) => {
-                return person.name.toLowerCase().includes(searchForName.toLowerCase());
+                return person.fullName.toLowerCase().includes(searchForName.toLowerCase());
             });
         }
 
@@ -279,12 +279,10 @@
 
         const App = React.createClass({
             getInitialState() {
-              debugger
                 return {
                     personList: [],
                     visiblePersonList: []
                 };
-                debugger
             },
 
             componentDidMount() {
