@@ -102,19 +102,43 @@
          *    ]
          */
         function getPersonList() {
-            return new Promise((resolve, reject) => {
-                fetch('http://api.namegame.willowtreemobile.com/').then(function(response) {
-                    if (response.status !== 200) {
-                        reject(new Error("Error!"));
-                    }
-
-                    response.json().then((imageList) => {
-                        resolve(imageList);
-                    });
+          return fetch('http://api.namegame.willowtreemobile.com/')
+            .then(response => {
+              if (response.ok){
+                return response.json()
+              }
+            })
+            .then(json => {
+              return json.map(function(employee) {
+                return new Person ({
+                  fullName: employee.name,
+                  first: getName({name: employee.name, key: "first"}),
+                  last: getName({name: employee.name, key: "last"}),
+                  url: employee.url
                 });
-            });
+              })
+            })
         }
 
+        function Person(args={fullName, first, last, url}){
+          this.fullName = args.fullName
+          this.first = args.first;
+          this.last = args.last;
+          this.url = args.url
+        }
+
+
+        function employeeParser(json){
+          this.firstName = getName(json)
+          json.map(function(object) {
+            return {
+              firstName: getName(object, "first"),
+              lastName: getName(object, "last"),
+              url: object.url
+            }
+          })
+
+        }
 
         /*==================================================
 
@@ -157,17 +181,15 @@
             return result;
         }
 
-
         /**
          * Remove any people that do not have the name we are
          * searching for.
          */
         function filterByName(searchForName, personList) {
             return personList.filter((person) => {
-                return person.name.toLowerCase().includes(searchForName.toLowerCase());
+                return person.fullName.toLowerCase().includes(searchForName.toLowerCase());
             });
         }
-
 
         /**
          * Takes in a property of an object list, e.g. "name" below
@@ -185,39 +207,44 @@
          *    > [{ name: 'Jon' }, { name: 'Kevin' }, { name: 'Sam' }]
          *
          */
-        function sortObjListByProp(args={prop, type}) {
+
+
+        function sortObjListByProp(args={prop}) {
           let prop = args.prop
-          let type = args.type
             return function(objList) {
                 // Make a copy & don't mutate the passed in list
                 let result = objList.slice(0);
                 result.sort((a, b) => {
-                    if (getName({name: a[prop], key: type}) > getName({name: b[prop], key: type})) {
+                    if (a[prop] > b[prop]) {
                         return -1;
                     }
 
-                    if (getName({name: a[prop], key: type}) < getName({name: b[prop], key: type})) {
+                    if (a[prop] < b[prop]) {
                         return 1;
                     }
 
                     return 1;
                 });
-                let first = (result[0] === objList[0])
-                let last = (result[-1] === objList[-1])
-                let randomIndex = Math.random() * (0 - result.length) + 1
-                let random = (result[randomIndex] === objList[randomIndex])
 
-                if (first && last && random) {
+                if (compareList(result, objList)) {
                   return result.reverse()
                 }
                 return result;
             };
         }
 
-        const sortByFirstName = sortObjListByProp({prop: 'name', type: 'first'});
+        function compareList(listA, listB) {
+          let first = (listA[0] === listB[0])
+          let last = (listA[-1] === listB[-1])
+          let randomIndex = Math.random() * (0 - listA.length) + 1
+          let random = (listA[randomIndex] === listB[randomIndex])
+          return (first && last && random)
+        }
+
+        const sortByFirstName = sortObjListByProp({prop: 'first'});
 
         // const sortByLastName = (personList) => sortByFirstName(personList).reverse();
-        const sortByLastName = sortObjListByProp({prop: 'name', type: 'last'});
+        const sortByLastName = sortObjListByProp({prop: 'last'});
 
         /*==================================================
 
@@ -230,15 +257,16 @@
             onChange: props.onChange
         });
 
+
         const Thumbnail = (props) => React.DOM.img({
             className: 'image',
             src: props.src
         });
 
-        const ListRow = (props) => React.DOM.tr({ key: props.person.name }, [
+        const ListRow = (props) => React.DOM.tr({ key: props.fullName }, [
             React.DOM.td({ key: 'thumb' }, React.createElement(Thumbnail, { src: props.person.url })),
-            React.DOM.td({ key: 'first' }, null, getName({name: props.person.name, key: 'first'})),
-            React.DOM.td({ key: 'last' }, null, getName({name: props.person.name, key: 'last'})),
+            React.DOM.td({ key: 'first' }, null, props.person.first),
+            React.DOM.td({ key: 'last' }, null, props.person.last),
         ]);
 
         const ListContainer = (props) => React.DOM.table({ className: 'list-container' }, [
@@ -293,6 +321,7 @@
 
             render() {
                 const { visiblePersonList } = this.state;
+                console.log("this is my state", this.state)
 
                 return React.DOM.div({ className: 'app-container' }, [
                     React.createElement(Search, { key: 'search', onChange: this._onSearch }),
